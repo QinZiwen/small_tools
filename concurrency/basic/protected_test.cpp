@@ -5,11 +5,11 @@ public:
     int m_Public;
 protected:
     int m_Protected;
-private:
+// private:
     int m_Private;
 };
 
-class CDerived :public CBase {
+class CDerived : public CBase {
 public:
     void AccessBase() {
         m_Public = 1;
