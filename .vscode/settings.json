@@ -54,6 +54,10 @@
         "variant": "cpp",
         "vector": "cpp",
         "algorithm": "cpp",
-        "execution": "cpp"
+        "execution": "cpp",
+        "deque": "cpp",
+        "stack": "cpp",
+        "condition_variable": "cpp",
+        "queue": "cpp"
     }
 }
