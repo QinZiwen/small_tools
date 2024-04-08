@@ -58,6 +58,8 @@
         "deque": "cpp",
         "stack": "cpp",
         "condition_variable": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "list": "cpp",
+        "future": "cpp"
     }
 }
