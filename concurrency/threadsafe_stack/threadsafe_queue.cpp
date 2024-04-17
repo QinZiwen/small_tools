@@ -89,8 +89,45 @@ void ThreadsafeQueueV2Test() {
     }
 }
 
+ccy::ThreadsafeQueueV3<int> g_threadsafe_queue_v3;
+void ThreadsafeQueueV3Test() {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 2; ++i) {
+        threads.emplace_back([&]() {
+            while(true) {
+                std::shared_ptr<int> res = g_threadsafe_queue_v3.try_pop();
+                if (res) {
+                    std::cout << std::this_thread::get_id() << " : " << *res << std::endl;
+                } else {
+                    std::cout << std::this_thread::get_id() << " : res is nullptr" << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+            }
+        });
+    }
+
+    for (int i = 0; i < 2; ++i) {
+        threads.emplace_back([&]() {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, 100);
+            for (int i = 0; i < 10; ++i) {
+                int v = dis(gen);
+                std::cout << std::this_thread::get_id() << " : " << v << std::endl;
+                g_threadsafe_queue_v3.push(v);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        });
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+}
+
 int main() {
     // ThreadsafeQueueTest();
-    ThreadsafeQueueV2Test();
+    // ThreadsafeQueueV2Test();
+    ThreadsafeQueueV3Test();
     return 0;
 }
