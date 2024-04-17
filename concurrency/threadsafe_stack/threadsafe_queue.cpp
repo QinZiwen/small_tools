@@ -92,7 +92,7 @@ void ThreadsafeQueueV2Test() {
 ccy::ThreadsafeQueueV3<int> g_threadsafe_queue_v3;
 void ThreadsafeQueueV3Test() {
     std::vector<std::thread> threads;
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 3; ++i) {
         threads.emplace_back([&]() {
             while(true) {
                 std::shared_ptr<int> res = g_threadsafe_queue_v3.try_pop();
@@ -111,7 +111,7 @@ void ThreadsafeQueueV3Test() {
             std::random_device rd;
             std::mt19937 gen(rd());
             std::uniform_int_distribution<> dis(0, 100);
-            for (int i = 0; i < 10; ++i) {
+            while (true) {
                 int v = dis(gen);
                 std::cout << std::this_thread::get_id() << " : " << v << std::endl;
                 g_threadsafe_queue_v3.push(v);
@@ -125,9 +125,42 @@ void ThreadsafeQueueV3Test() {
     }
 }
 
+ccy::ThreadsafeQueueV4<int> g_threadsafe_queue_v4;
+void ThreadsafeQueueV4Test() {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 3; ++i) {
+        threads.emplace_back([&]() {
+            while(true) {
+                std::shared_ptr<int> res = g_threadsafe_queue_v4.wait_pop();
+                std::cout << std::this_thread::get_id() << " << " << *res << std::endl;
+            }
+        });
+    }
+
+    for (int i = 0; i < 2; ++i) {
+        threads.emplace_back([&]() {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, 100);
+            while (true) {
+                int v = dis(gen);
+                std::cout << std::this_thread::get_id() << " >> " << v << std::endl;
+                g_threadsafe_queue_v4.push(v);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+        });
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+}
+
 int main() {
     // ThreadsafeQueueTest();
     // ThreadsafeQueueV2Test();
-    ThreadsafeQueueV3Test();
+    // ThreadsafeQueueV3Test();
+    ThreadsafeQueueV4Test();
+
     return 0;
 }
