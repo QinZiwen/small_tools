@@ -13,7 +13,7 @@ struct EmptyStack : public std::exception {
     }
 };
 
-template <typename T>
+template<typename T>
 class ThreadsafeStack {
 public:
     ThreadsafeStack() = default;
