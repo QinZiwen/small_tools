@@ -5,8 +5,7 @@
 #include <random>
 
 ccy::ThreadsafeQueue<int> g_threadsafe_queue;
-
-int main() {
+void ThreadsafeQueueTest() {
     std::thread thread1([&]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
         std::shared_ptr<int> value = g_threadsafe_queue.wait_and_pop();
@@ -52,5 +51,46 @@ int main() {
     thread2_1.join();
     thread2_2.join();
     thread3.join();
+}
+
+ccy::ThreadsafeQueueV2<int> g_threadsafe_queue_v2;
+void ThreadsafeQueueV2Test() {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 1; ++i) {
+        threads.emplace_back([&]() {
+            while(true) {
+                std::shared_ptr<int> res = g_threadsafe_queue_v2.try_pop();
+                if (res) {
+                    std::cout << "thread1: " << *res << std::endl;
+                } else {
+                    std::cout << "thread1: res is nullptr" << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+            }
+        });
+    }
+
+    for (int i = 0; i < 2; ++i) {
+        threads.emplace_back([&]() {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, 100);
+            for (int i = 0; i < 10; ++i) {
+                int v = dis(gen);
+                std::cout << std::this_thread::get_id() << " : " << v << std::endl;
+                g_threadsafe_queue_v2.push(v);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        });
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+}
+
+int main() {
+    // ThreadsafeQueueTest();
+    ThreadsafeQueueV2Test();
     return 0;
 }

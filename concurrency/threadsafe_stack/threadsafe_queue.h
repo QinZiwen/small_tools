@@ -7,7 +7,7 @@
 
 namespace ccy {
 
-template <typename T>
+template<typename T>
 class ThreadsafeQueue {
 public:
     ThreadsafeQueue() = default;
@@ -81,6 +81,50 @@ private:
     mutable std::mutex m_mutex;
     std::queue<T> m_data_queue;
     std::condition_variable m_data_cond;
+};
+
+template<typename T>
+class ThreadsafeQueueV2 {
+public:
+    ThreadsafeQueueV2() : m_head(new Node), m_tail(m_head.get()) {
+    }
+
+    ThreadsafeQueueV2(const ThreadsafeQueueV2& other) = delete;
+    ThreadsafeQueueV2& operator=(const ThreadsafeQueueV2& other) = delete;
+
+    std::shared_ptr<T> try_pop() {
+        if (m_head.get() == m_tail) {
+            return nullptr;
+        }
+
+        std::lock_guard<std::mutex> lock(m_head_mutex);
+        std::shared_ptr<T> res(std::move(m_head->data));
+        std::unique_ptr<Node> old_head = std::move(m_head);
+        m_head = std::move(old_head->next);
+        return res;
+    }
+
+    void push(T value) {
+        std::shared_ptr<T> new_data(std::make_shared<T>(std::move(value)));
+        std::unique_ptr<Node> p(new Node);
+
+        std::lock_guard<std::mutex> lock(m_tail_mutex);
+        m_tail->data = std::move(new_data);
+        m_tail->next = std::move(p);
+        m_tail = m_tail->next.get();
+   }
+
+private:
+    struct Node {
+        std::shared_ptr<T> data;
+        std::unique_ptr<Node> next;
+    };
+
+private:
+    std::unique_ptr<Node> m_head;
+    Node* m_tail;
+    std::mutex m_head_mutex;
+    std::mutex m_tail_mutex;
 };
 
 }  // namespace ccy
