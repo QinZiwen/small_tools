@@ -5,3 +5,6 @@ target_link_libraries(threadsafe_queue pthread)
 
 add_executable(threadsafe_stack threadsafe_stack.cpp)
 target_link_libraries(threadsafe_stack pthread)
+
+add_executable(threadsafe_lookup_table threadsafe_lookup_table.cpp)
+target_link_libraries(threadsafe_lookup_table pthread)

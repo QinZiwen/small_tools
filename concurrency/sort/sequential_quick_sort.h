@@ -3,6 +3,7 @@
 #include <list>
 #include <future>
 #include <type_traits>
+#include <algorithm>
 
 namespace ccy {
 
