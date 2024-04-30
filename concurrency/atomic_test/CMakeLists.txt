@@ -1,0 +1,2 @@
+add_executable(memory_order memory_order.cpp)
+target_link_libraries(memory_order pthread)
