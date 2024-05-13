@@ -1,0 +1,2 @@
+add_executable(thread_pool_v1 thread_pool_v1.cpp)
+target_link_libraries(thread_pool_v1 pthread)
