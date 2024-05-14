@@ -26,9 +26,9 @@ public:
         return *this;
     }
 
-    void push(T value) {
+    void push(T&& value) {
         std::lock_guard<std::mutex> lock(m_mutex);
-        m_data_queue.push(value);
+        m_data_queue.push(std::forward<T>(value));
         m_data_cond.notify_one();
     }
 
@@ -37,7 +37,7 @@ public:
         if (m_data_queue.empty()) {
             return false;
         }
-        value = m_data_queue.front();
+        value = std::move(m_data_queue.front());
         m_data_queue.pop();
         return true;
     }
@@ -55,7 +55,7 @@ public:
     void wait_and_pop(T& value) {
         std::unique_lock<std::mutex> lock(m_mutex);
         m_data_cond.wait(lock, [this]() { return !m_data_queue.empty(); });
-        value = m_data_queue.front();
+        value = std::move(m_data_queue.front());
         m_data_queue.pop();
     }
 
