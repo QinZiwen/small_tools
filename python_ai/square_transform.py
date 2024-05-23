@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 
+# 打印opencv版本信息
+print(cv2.__version__)
+
 # 读取图片
 original_image = cv2.imread("/Users/qinziwen/Downloads/soccer.jpeg")
 # 获取图片的宽度和高度
@@ -62,6 +65,15 @@ last_point = dst_points[2] - [100, 0]
 first_point_int = first_point.astype(int)
 last_point_int = last_point.astype(int)
 cv2.line(warped_image, first_point_int, last_point_int, (0, 255, 0), 3)
+
+# 将original_image的图像中心点利用M投影到warped_image，并将投影结果画在warped_image上，使用红色三角形
+center_point = (img_width // 2, img_height // 2)
+# 将中心点转为numpy float32格式
+center_point_float32 = np.float32(center_point)
+# 对中心点进行reshape，以便于传递给perspectiveTransform
+projected_center = cv2.perspectiveTransform(np.float32([center_point_float32]).reshape(-1, 1, 2), M)[0][0]
+# 以projected_center为中心画一个圆形在warped_image上，圆形的半径为30个像素
+cv2.circle(warped_image, tuple(projected_center.astype(int)), 30, (0, 0, 255), -1)
 
 # 显示原图和变换后的图
 cv2.imshow("Original Image", original_image)
