@@ -5,7 +5,7 @@ import numpy as np
 print(cv2.__version__)
 
 # 读取图片
-original_image = cv2.imread("/Users/qinziwen/Downloads/soccer.jpeg")
+original_image = cv2.imread("/Users/qinziwen/Downloads/feipan/feipan_1/feipan_1_180.jpg")
 # 获取图片的宽度和高度
 img_width, img_height = original_image.shape[1], original_image.shape[0]
 new_img_width = 1920
@@ -20,6 +20,8 @@ def get_src_points(event, x, y, flags, param):
         # 将坐标添加到列表中
         src_points.append((x, y))
         print(f"Clicked point: ({x}, {y})")
+        # 将坐标绘制到图片上
+        cv2.circle(original_image, (x, y), 5, (0, 0, 255), -1)
 
 cv2.namedWindow('Image')  # 创建一个窗口
 cv2.setMouseCallback('Image', get_src_points)  # 注册鼠标回调函数
