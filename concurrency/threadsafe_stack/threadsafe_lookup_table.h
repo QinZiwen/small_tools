@@ -1,9 +1,11 @@
 #pragma once
 
 #include <thread>
+#include <mutex>
 #include <list>
 #include <shared_mutex>
 #include <algorithm>
+#include <vector>
 
 namespace ccy {
 

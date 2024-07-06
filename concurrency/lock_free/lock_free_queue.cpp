@@ -1,6 +1,7 @@
 #include "lock_free_queue.h"
 
 #include <thread>
+#include <vector>
 
 ccy::LockFreeQueue<int> g_queue;
 
