@@ -3,6 +3,7 @@
 #include <thread>
 #include <iostream>
 #include <chrono>
+#include <vector>
 
 ccy::LockFreeStack<int> g_stack;
 

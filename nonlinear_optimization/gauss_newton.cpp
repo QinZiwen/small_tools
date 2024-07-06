@@ -54,7 +54,7 @@ void gaussNewton(bool useSigma) {
         }
 
         Eigen::Vector3d dx = H.ldlt().solve(b);
-        if (isnan(dx[0])) {
+        if (std::isnan(dx[0])) {
             std::cout << "result is nan!" << std::endl;
             break;
         }

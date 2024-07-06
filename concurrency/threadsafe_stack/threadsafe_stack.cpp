@@ -3,6 +3,7 @@
 #include <thread>
 #include <iostream>
 #include <random>
+#include <vector>
 
 ccy::ThreadsafeStack<int> g_safeStack;
 int main() {
