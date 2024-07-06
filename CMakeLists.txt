@@ -15,3 +15,4 @@ endif()
 
 add_subdirectory(algorithm_practice)
 add_subdirectory(concurrency)
+add_subdirectory(nonlinear_optimization)
