@@ -3,6 +3,7 @@
 #include <thread>
 #include <iostream>
 #include <random>
+#include <vector>
 
 ccy::ThreadsafeQueue<int> g_threadsafe_queue;
 void ThreadsafeQueueTest() {
