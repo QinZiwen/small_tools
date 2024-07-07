@@ -13,6 +13,8 @@ elseif(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
 endif()
 
+include(${CMAKE_SOURCE_DIR}/cmake/third_party.cmake)
+
 add_subdirectory(algorithm_practice)
 add_subdirectory(concurrency)
 add_subdirectory(nonlinear_optimization)
