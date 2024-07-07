@@ -4,7 +4,7 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
-void gaussNewton() {
+void gaussNewton(bool useSigma) {
     double ar = 1.0, br = 2.0, cr = 1.0;
     double ae = 4.1, be = 3.9, ce = 2.1;
     int N = 100;
@@ -42,8 +42,13 @@ void gaussNewton() {
             J[1] = -x * exp(ae * x * x + be * x + ce);
             J[2] = -exp(ae * x * x + be * x + ce);
 
-            H += inv_sigma * inv_sigma * J * J.transpose();
-            b += -inv_sigma * inv_sigma * J * error;
+            if (useSigma) {
+                H += inv_sigma * inv_sigma * J * J.transpose();
+                b += -inv_sigma * inv_sigma * J * error;
+            } else {
+                H += J * J.transpose();
+                b += -J * error;
+            }
 
             cost += error * error;
         }
@@ -63,7 +68,7 @@ void gaussNewton() {
         be += dx[1];
         ce += dx[2];
         last_cost = cost;
-        std::cout << "total cost: " << cost << ", \t\t update: " << dx.transpose()
+        std::cout << "iter: " << iter << ", total cost: " << cost << ", \t\t update: " << dx.transpose()
                   << ", \t\t estimated params: " << ae << ", " << be << ", " << ce << std::endl;
     }
 
@@ -75,6 +80,7 @@ void gaussNewton() {
 }
 
 int main() {
-    gaussNewton();
+    gaussNewton(true);
+    gaussNewton(false);
     return 0;
 }
