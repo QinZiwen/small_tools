@@ -69,6 +69,12 @@
         "map": "cpp",
         "set": "cpp",
         "unordered_set": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "any": "cpp",
+        "cfenv": "cpp",
+        "csetjmp": "cpp",
+        "csignal": "cpp",
+        "regex": "cpp",
+        "scoped_allocator": "cpp"
     }
 }
