@@ -64,3 +64,19 @@ ExternalProject_Add(
     UPDATE_COMMAND ""
 )
 add_dependencies(ceres-solver glog eigen)
+
+ExternalProject_Add(
+    g2o
+    GIT_REPOSITORY https://github.com/RainerKuemmerle/g2o.git
+    GIT_TAG master
+    PREFIX ${external_prefix}
+    CMAKE_ARGS
+        -DEigen3_DIR=${external_install_prefix}/share/eigen3/cmake
+        -DCMAKE_INSTALL_PREFIX=${external_install_prefix}
+    BUILD_ALWAYS FALSE
+    UPDATE_COMMAND ""
+)
+add_dependencies(g2o eigen)
+
+set(CMAKE_PREFIX_PATH ${external_install_prefix})
+set(Eigen3_DIR ${external_install_prefix}/share/eigen3/cmake)
