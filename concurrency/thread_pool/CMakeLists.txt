@@ -8,4 +8,4 @@ add_executable(thread_pool_v3 thread_pool_v3.cpp)
 target_link_libraries(thread_pool_v3 pthread)
 
 add_executable(thread_pool_v4 thread_pool_v4.cpp)
-target_link_libraries(thread_pool_v4 pthread -latomic)
+target_link_libraries(thread_pool_v4 pthread)
