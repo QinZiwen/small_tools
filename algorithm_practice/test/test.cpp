@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <list>
 
 struct Node {
     int data;
@@ -50,6 +51,16 @@ private:
     Node* m_tail = nullptr;
 };
 
+void testList() {
+    std::list<int> l1;
+    std::list<char> l2;
+    std::list<double> l3;
+    std::cout << "int list max size: " << l1.max_size() << std::endl;
+    std::cout << "char list max size: " << l2.max_size() << std::endl;
+    std::cout << "double list max size: " << l3.max_size() << std::endl;
+}
+
 int main(int argc, char** argv) {
+    testList();
     return 0;
 }
