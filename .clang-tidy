@@ -1,0 +1,11 @@
+Checks: >
+  -*,
+  bugprone-*,
+  performance-*,
+  modernize-*,
+  readability-*,
+  clang-analyzer-*
+WarningsAsErrors: 'clang-analyzer-*'
+HeaderFilterRegex: '.*'       # 匹配所有头文件
+InheritParentConfig: true
+FormatStyle: file             # 只提示，不自动格式化

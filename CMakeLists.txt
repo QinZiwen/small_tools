@@ -7,6 +7,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE "Debug")
 
+# # 生成 compile_commands.json
+# cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+# # 检查某个文件
+# clang-tidy-18 src/foo.cpp -p=.
+# small_tools/build$ clang-tidy-18 ../algorithm_practice/perfetto/perfetto_demo.cpp -p=.
+# set(CMAKE_CXX_CLANG_TIDY "/usr/bin/clang-tidy-18;-p=${CMAKE_BINARY_DIR}")
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 elseif(MSVC)

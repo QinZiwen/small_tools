@@ -152,7 +152,7 @@ void Executor::mount(Id id) {
 
 void Executor::demount(Id id) {
     std::lock_guard<ExecutorMap> lock(_executorMap);
-    Executor* old = _executorMap[id];
+    // Executor* old = _executorMap[id];
     _executorMap.erase(id);
 }
 
