@@ -7,18 +7,18 @@
 
 #pragma once
 
-#include <memory>
-#include <functional>
-
 #include "base.h"
+
+#include <functional>
+#include <memory>
 
 class CallbackBase {
     void* _function = nullptr;
-    CallbackBase() { }
+    CallbackBase() {}
 
-public:
-    virtual ~CallbackBase() { }
-    
+  public:
+    virtual ~CallbackBase() {}
+
     template <typename T>
     static std::shared_ptr<CallbackBase> from(const std::function<T>& function) {
         struct C : public CallbackBase {
@@ -26,7 +26,7 @@ public:
                 _function = new std::function<T>(function);
             }
             virtual ~C() override {
-                delete (std::function<T>*) _function;
+                delete (std::function<T>*)_function;
             }
         };
         return std::make_shared<C>(function);
@@ -34,7 +34,7 @@ public:
 
     template <typename T>
     T& to() const {
-        return * (T*) _function;
+        return *(T*)_function;
     }
 };
 
@@ -42,7 +42,7 @@ public:
 //     public:
 //         virtual ~FunctionWrapper() = default;
 //         virtual void call() = 0;  // 统一的调用接口
-    
+
 //         // 工厂函数
 //         template <typename Func>
 //         static std::unique_ptr<FunctionWrapper> makeFunctionWrapper(Func&& f) {
@@ -51,7 +51,7 @@ public:
 //             );
 //         }
 //     };
-    
+
 //     // 具体实现类
 //     template <typename Func>
 //     class FunctionWrapperImpl : public FunctionWrapper {
@@ -60,7 +60,7 @@ public:
 //     public:
 //         explicit FunctionWrapperImpl(Func f) : func(std::move(f)) {}
 //         ~FunctionWrapperImpl() { std::cout << "dectory FunctionWrapperImpl" << std::endl; }
-        
+
 //         void call() override {
 //             func();  // 调用存储的函数
 //         }

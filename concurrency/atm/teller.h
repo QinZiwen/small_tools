@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
-
 #include "message.h"
 #include "sender_receiver.h"
+
+#include <string>
 
 namespace ccy {
 
@@ -21,14 +21,12 @@ struct Withdraw_denied {};
 struct Withdraw_cancel {
     std::string account;
     unsigned int amount;
-    Withdraw_cancel(const std::string& account_, unsigned int amount_)
-        : account(account_), amount(amount_) {}
+    Withdraw_cancel(const std::string& account_, unsigned int amount_) : account(account_), amount(amount_) {}
 };
 struct Withdraw_processed {
     std::string account;
     unsigned int amount;
-    Withdraw_processed(const std::string& account_, unsigned int amount_)
-        : account(account_), amount(amount_) {}
+    Withdraw_processed(const std::string& account_, unsigned int amount_) : account(account_), amount(amount_) {}
 };
 struct Withdraw_pressed {
     unsigned int amount;
@@ -60,8 +58,7 @@ struct VerifyPin {
     std::string pin;
     mutable Sender atm_queue;
     VerifyPin(const std::string& account_, const std::string& pin_, Sender atm_queue_)
-        : account(account_), pin(pin_), atm_queue(atm_queue_)
-    {}
+        : account(account_), pin(pin_), atm_queue(atm_queue_) {}
 };
 
 struct PinVerified {};
@@ -76,9 +73,7 @@ struct DisplayWithdrawalOptions {};
 struct GetBalance {
     std::string account;
     mutable Sender atm_queue;
-    GetBalance(std::string account_, Sender atm_queue_)
-        : account(account_), atm_queue(atm_queue_)
-    {}
+    GetBalance(std::string account_, Sender atm_queue_) : account(account_), atm_queue(atm_queue_) {}
 };
 
 struct Balance {
@@ -94,11 +89,11 @@ struct DisplayBalance {
 struct BalancePressed {};
 
 class Atm {
-public:
+  public:
     Atm() {
         std::cout << "[Atm::Atm]" << std::endl;
     }
-    Atm(const Atm&) = delete;
+    Atm(const Atm&)           = delete;
     Atm operator=(const Atm&) = delete;
 
     Atm(Sender bank, Sender interface_hardware) : m_bank(bank), m_interface_hardware(interface_hardware) {}
@@ -114,7 +109,8 @@ public:
             while (true) {
                 (this->*state)();
             }
-        } catch (const CloseQueue&) {}
+        } catch (const CloseQueue&) {
+        }
 
         std::cout << ">>>>>> [Atm::run] done <<<<<<" << std::endl;
     }
@@ -124,8 +120,8 @@ public:
         return m_incoming;
     }
 
-private:
-    void precessWithdrawal () {
+  private:
+    void precessWithdrawal() {
         m_incoming.wait()
             .handle<Withdraw_ok>([&](const Withdraw_ok& msg) {
                 m_interface_hardware.send(IssueMoney(m_withdrawal_amount));
@@ -142,7 +138,7 @@ private:
             });
     }
 
-    void precessBalance () {
+    void precessBalance() {
         std::cout << "[Atm::precessBalance]" << std::endl;
     }
 
@@ -156,28 +152,25 @@ private:
 
     void gettingPin() {
         std::cout << "[Atm::gettingPin]" << std::endl;
-        m_incoming.wait()
-            .handle<DigitPressed>([&](const DigitPressed& msg) {
-                std::cout << "[Atm::gettingPin] digit: " << msg.digit << std::endl;
-            });
+        m_incoming.wait().handle<DigitPressed>(
+            [&](const DigitPressed& msg) { std::cout << "[Atm::gettingPin] digit: " << msg.digit << std::endl; });
     }
 
     void waitingForCard() {
         std::cout << "[Atm::waitingForCard]" << std::endl;
-        m_incoming.wait()
-            .handle<CardInserted>([&](const CardInserted& msg) {
-                m_account = msg.account;
-                m_interface_hardware.send(DisplayEnterPin());
-                state = &Atm::gettingPin;
-                std::cout << "[Atm::waitingForCard] CardInserted m_account: " << m_account << std::endl;
-            });
+        m_incoming.wait().handle<CardInserted>([&](const CardInserted& msg) {
+            m_account = msg.account;
+            m_interface_hardware.send(DisplayEnterPin());
+            state = &Atm::gettingPin;
+            std::cout << "[Atm::waitingForCard] CardInserted m_account: " << m_account << std::endl;
+        });
     }
 
     void doneProcessing() {
         std::cout << "[Atm::doneProcessing]" << std::endl;
     }
 
-private:
+  private:
     Receiver m_incoming;
     Sender m_bank;
     Sender m_interface_hardware;
@@ -189,7 +182,7 @@ private:
 };
 
 class BankMaching {
-public:
+  public:
     BankMaching() : m_balance(199) {
         std::cout << "[BankMaching::BankMaching]" << std::endl;
     }
@@ -202,7 +195,7 @@ public:
     void run() {
         std::cout << ">>>>>> [BankMaching::run] <<<<<<" << std::endl;
         try {
-            while(true) {
+            while (true) {
                 m_incoming.wait()
                     .handle<VerifyPin>([&](const VerifyPin& msg) {
                         if (msg.pin == "1937") {
@@ -220,7 +213,8 @@ public:
                         }
                     });
             }
-        } catch (const CloseQueue&) {}
+        } catch (const CloseQueue&) {
+        }
 
         std::cout << ">>>>>> [BankMaching::run] done <<<<<<" << std::endl;
     }
@@ -230,13 +224,13 @@ public:
         return m_incoming;
     }
 
-private:
+  private:
     Receiver m_incoming;
     unsigned int m_balance;
 };
 
 class InterfaceMachine {
-public:
+  public:
     InterfaceMachine() {
         std::cout << "[InterfaceMachine::InterfaceMachine]" << std::endl;
     }
@@ -249,13 +243,13 @@ public:
         std::cout << ">>>>>> [InterfaceMachine::run] <<<<<<" << std::endl;
         try {
             while (true) {
-                m_incoming.wait()
-                    .handle<IssueMoney>([&](const IssueMoney& msg) {
-                        std::lock_guard<std::mutex> lk(m_iom);
-                        std::cout << "[InterfaceMachine::run] IssueMoney: " << msg.amount << std::endl;
-                    });
+                m_incoming.wait().handle<IssueMoney>([&](const IssueMoney& msg) {
+                    std::lock_guard<std::mutex> lk(m_iom);
+                    std::cout << "[InterfaceMachine::run] IssueMoney: " << msg.amount << std::endl;
+                });
             }
-        } catch (const CloseQueue&) {}
+        } catch (const CloseQueue&) {
+        }
         std::cout << ">>>>>> [InterfaceMachine::run] done <<<<<<" << std::endl;
     }
 
@@ -264,7 +258,7 @@ public:
         return m_incoming;
     }
 
-private:
+  private:
     Receiver m_incoming;
     mutable std::mutex m_iom;
 };

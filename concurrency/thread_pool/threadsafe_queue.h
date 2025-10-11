@@ -1,15 +1,15 @@
 #pragma once
 
+#include <condition_variable>
 #include <memory>
 #include <mutex>
 #include <queue>
-#include <condition_variable>
 
 namespace ccy {
-    
-template<typename T>
+
+template <typename T>
 class ThreadsafeQueue {
-public:
+  public:
     ThreadsafeQueue() = default;
     ThreadsafeQueue(const ThreadsafeQueue& other) {
         std::lock_guard<std::mutex> lock1(other.m_mutex);
@@ -77,7 +77,7 @@ public:
         return m_data_queue.size();
     }
 
-private:
+  private:
     mutable std::mutex m_mutex;
     std::queue<T> m_data_queue;
     std::condition_variable m_data_cond;

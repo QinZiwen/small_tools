@@ -1,6 +1,6 @@
 #include <iostream>
-#include <vector>
 #include <list>
+#include <vector>
 
 struct Node {
     int data;
@@ -8,7 +8,7 @@ struct Node {
 };
 
 class ListClt {
-public:
+  public:
     void constructList(const std::vector<int>& datas) {
         for (auto d : datas) {
             Node* n = new Node();
@@ -46,7 +46,7 @@ public:
         }
     }
 
-private:
+  private:
     Node* m_head = nullptr;
     Node* m_tail = nullptr;
 };

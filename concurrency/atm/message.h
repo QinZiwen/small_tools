@@ -1,10 +1,10 @@
 #pragma once
 
-#include <mutex>
 #include <condition_variable>
-#include <queue>
-#include <memory>
 #include <iostream>
+#include <memory>
+#include <mutex>
+#include <queue>
 
 namespace ccy {
 
@@ -21,7 +21,7 @@ struct WrappedMessage : public MessageBase {
 };
 
 class Queue {
-public:
+  public:
     template <typename T>
     void push(const T& msg) {
         std::unique_lock<std::mutex> lock(m_mutex);
@@ -39,7 +39,7 @@ public:
         return msg;
     }
 
-private:
+  private:
     std::mutex m_mutex;
     std::condition_variable m_condition;
     std::queue<std::shared_ptr<MessageBase>> m_queue;

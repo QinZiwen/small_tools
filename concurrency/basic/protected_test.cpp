@@ -2,18 +2,19 @@
 #include <string>
 
 class CBase {
-public:
+  public:
     int m_Public;
-protected:
+
+  protected:
     int m_Protected;
-// private:
+    // private:
     int m_Private;
 };
 
 class CDerived : public CBase {
-public:
+  public:
     void AccessBase() {
-        m_Public = 1;
+        m_Public    = 1;
         m_Protected = 2;
         // m_private = 3;
 
@@ -23,13 +24,12 @@ public:
     }
 };
 
-struct Coordinate{
+struct Coordinate {
     double lon;
     double lat;
 };
 
-struct RoutePointInfo
-{
+struct RoutePointInfo {
     int linkIndex;
     Coordinate point;
     Coordinate displayPoint;
@@ -52,7 +52,7 @@ int main() {
     base.m_Public = 1;
     // base.m_Protected = 2;    // Cannot access directly
 
-    CBase* pBase = new CBase;
+    CBase* pBase    = new CBase;
     pBase->m_Public = 1;
     // pBase->m_Protected = 2;    // Cannot access directly
     delete pBase;

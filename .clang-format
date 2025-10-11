@@ -1,4 +1,75 @@
+# ----------------------------------------
+# Google C++ Style Base
+# ----------------------------------------
 BasedOnStyle: Google
-IndentWidth: 4
-ColumnLimit: 120
-AllowShortFunctionsOnASingleLine: false
+Language: Cpp
+
+# 文件编码与换行
+UseTab: Never                # 不使用 tab 缩进
+IndentWidth: 4               # 4 空格缩进
+TabWidth: 4
+ColumnLimit: 120             # 每行最大长度（Google 默认 80，可以放宽）
+
+# 括号与大括号风格
+BreakBeforeBraces: Attach    # 大括号与函数/类同行
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# 函数与参数格式
+AlignAfterOpenBracket: Align
+BinPackArguments: true
+BinPackParameters: true
+
+# 空格控制
+SpaceAfterCStyleCast: false
+SpaceBeforeParens: ControlStatements  # if/for/while 后有空格，函数调用无空格
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 2
+
+# 访问控制符（public/private/protected）缩进
+AccessModifierOffset: -2
+
+# 命名空间控制
+NamespaceIndentation: None
+FixNamespaceComments: true
+
+# Include 排序与分组
+IncludeBlocks: Regroup
+SortIncludes: true
+IncludeCategories:
+  - Regex:           '^<ext/.*\.h>'
+    Priority:        1
+  - Regex:           '^<.*\.h>'
+    Priority:        2
+  - Regex:           '^".*\.h"'
+    Priority:        3
+  - Regex:           '.*'
+    Priority:        4
+
+# 注释相关
+ReflowComments: true
+CommentPragmas: '^ NOLINT'
+
+# 枚举与初始化列表
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: false
+AlignOperands: true
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+
+# 模板与 lambda
+PenaltyBreakBeforeFirstCallParameter: 100
+PenaltyBreakComment: 300
+PenaltyBreakString: 1000
+
+# C++11 特性
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+PointerAlignment: Left    # 类型名左对齐，如 int* p;
+
+# 其他细节
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+IndentCaseLabels: true
+KeepEmptyLinesAtTheStartOfBlocks: false

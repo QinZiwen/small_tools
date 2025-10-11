@@ -1,15 +1,15 @@
 #pragma once
 
+#include <condition_variable>
 #include <memory>
 #include <mutex>
 #include <queue>
-#include <condition_variable>
 
 namespace ccy {
 
-template<typename T>
+template <typename T>
 class ThreadsafeQueue {
-public:
+  public:
     ThreadsafeQueue() = default;
     ThreadsafeQueue(const ThreadsafeQueue& other) {
         std::lock_guard<std::mutex> lock1(other.m_mutex);
@@ -77,19 +77,18 @@ public:
         return m_data_queue.size();
     }
 
-private:
+  private:
     mutable std::mutex m_mutex;
     std::queue<T> m_data_queue;
     std::condition_variable m_data_cond;
 };
 
-template<typename T>
+template <typename T>
 class ThreadsafeQueueV2 {
-public:
-    ThreadsafeQueueV2() : m_head(new Node), m_tail(m_head.get()) {
-    }
+  public:
+    ThreadsafeQueueV2() : m_head(new Node), m_tail(m_head.get()) {}
 
-    ThreadsafeQueueV2(const ThreadsafeQueueV2& other) = delete;
+    ThreadsafeQueueV2(const ThreadsafeQueueV2& other)            = delete;
     ThreadsafeQueueV2& operator=(const ThreadsafeQueueV2& other) = delete;
 
     std::shared_ptr<T> try_pop() {
@@ -100,7 +99,7 @@ public:
         std::lock_guard<std::mutex> lock(m_head_mutex);
         std::shared_ptr<T> res(std::move(m_head->data));
         std::unique_ptr<Node> old_head = std::move(m_head);
-        m_head = std::move(old_head->next);
+        m_head                         = std::move(old_head->next);
         return res;
     }
 
@@ -111,29 +110,28 @@ public:
         std::lock_guard<std::mutex> lock(m_tail_mutex);
         m_tail->data = std::move(new_data);
         m_tail->next = std::move(p);
-        m_tail = m_tail->next.get();
-   }
+        m_tail       = m_tail->next.get();
+    }
 
-private:
+  private:
     struct Node {
         std::shared_ptr<T> data;
         std::unique_ptr<Node> next;
     };
 
-private:
+  private:
     std::unique_ptr<Node> m_head;
     Node* m_tail;
     std::mutex m_head_mutex;
     std::mutex m_tail_mutex;
 };
 
-template<typename T>
+template <typename T>
 class ThreadsafeQueueV3 {
-public:
-    ThreadsafeQueueV3() : m_head(new Node), m_tail(m_head.get()) {
-    }
+  public:
+    ThreadsafeQueueV3() : m_head(new Node), m_tail(m_head.get()) {}
 
-    ThreadsafeQueueV3(const ThreadsafeQueueV3& other) = delete;
+    ThreadsafeQueueV3(const ThreadsafeQueueV3& other)            = delete;
     ThreadsafeQueueV3& operator=(const ThreadsafeQueueV3& other) = delete;
 
     std::shared_ptr<T> try_pop() {
@@ -148,10 +146,10 @@ public:
         std::lock_guard<std::mutex> lock(m_tail_mutex);
         m_tail->data = std::move(new_data);
         m_tail->next = std::move(p);
-        m_tail = m_tail->next.get();
-   }
+        m_tail       = m_tail->next.get();
+    }
 
-private:
+  private:
     struct Node {
         std::shared_ptr<T> data;
         std::unique_ptr<Node> next;
@@ -163,24 +161,23 @@ private:
             return nullptr;
         }
         std::unique_ptr<Node> old_head = std::move(m_head);
-        m_head = std::move(old_head->next);
+        m_head                         = std::move(old_head->next);
         return old_head;
     }
 
-private:
+  private:
     std::unique_ptr<Node> m_head;
     Node* m_tail;
     std::mutex m_head_mutex;
     std::mutex m_tail_mutex;
 };
 
-template<typename T>
+template <typename T>
 class ThreadsafeQueueV4 {
-public:
-    ThreadsafeQueueV4() : m_head(new Node), m_tail(m_head.get()) {
-    }
+  public:
+    ThreadsafeQueueV4() : m_head(new Node), m_tail(m_head.get()) {}
 
-    ThreadsafeQueueV4(const ThreadsafeQueueV4& other) = delete;
+    ThreadsafeQueueV4(const ThreadsafeQueueV4& other)            = delete;
     ThreadsafeQueueV4& operator=(const ThreadsafeQueueV4& other) = delete;
 
     std::shared_ptr<T> wait_pop() {
@@ -195,11 +192,11 @@ public:
         std::lock_guard<std::mutex> lock(m_tail_mutex);
         m_tail->data = std::move(new_data);
         m_tail->next = std::move(p);
-        m_tail = m_tail->next.get();
+        m_tail       = m_tail->next.get();
         m_cond.notify_one();
-   }
+    }
 
-private:
+  private:
     struct Node {
         std::shared_ptr<T> data;
         std::unique_ptr<Node> next;
@@ -209,11 +206,11 @@ private:
         std::unique_lock<std::mutex> lock(m_head_mutex);
         m_cond.wait(lock, [this]() { return m_head.get() != m_tail; });
         std::unique_ptr<Node> old_head = std::move(m_head);
-        m_head = std::move(old_head->next);
+        m_head                         = std::move(old_head->next);
         return old_head;
     }
 
-private:
+  private:
     std::unique_ptr<Node> m_head;
     Node* m_tail;
     std::mutex m_head_mutex;

@@ -1,8 +1,8 @@
 #include "lock_free_stack.h"
 
-#include <thread>
-#include <iostream>
 #include <chrono>
+#include <iostream>
+#include <thread>
 #include <vector>
 
 ccy::LockFreeStack<int> g_stack;
@@ -22,7 +22,7 @@ void LockFreeStackTest() {
     for (int i = 0; i < 10; ++i) {
         threads.emplace_back([&]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            while (true) { 
+            while (true) {
                 std::cout << "read stack ..." << std::endl;
                 std::shared_ptr<int> data = g_stack.pop();
                 if (data != nullptr) {

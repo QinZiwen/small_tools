@@ -1,8 +1,8 @@
 #include "threadsafe_stack.h"
 
-#include <thread>
 #include <iostream>
 #include <random>
+#include <thread>
 #include <vector>
 
 ccy::ThreadsafeStack<int> g_safeStack;

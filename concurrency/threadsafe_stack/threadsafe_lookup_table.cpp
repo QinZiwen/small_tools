@@ -1,4 +1,5 @@
 #include "threadsafe_lookup_table.h"
+
 #include <iostream>
 #include <random>
 
@@ -7,7 +8,7 @@ void ThreadsafeLookupTableTest() {
     std::vector<std::thread> threads;
     for (int i = 0; i < 3; ++i) {
         threads.emplace_back([&]() {
-            while(true) {
+            while (true) {
                 for (int j = 0; j < 10; ++j) {
                     int v = g_lookup_table.value_for(j, j);
                     std::cout << std::this_thread::get_id() << " << " << v << std::endl;

@@ -1,21 +1,21 @@
 #pragma once
 
-#include <thread>
-#include <mutex>
-#include <list>
-#include <shared_mutex>
 #include <algorithm>
+#include <list>
+#include <mutex>
+#include <shared_mutex>
+#include <thread>
 #include <vector>
 
 namespace ccy {
 
-template<typename Key, typename Value, typename Hash = std::hash<Key>>
+template <typename Key, typename Value, typename Hash = std::hash<Key>>
 class ThreadsafeLookupTable {
-private:
+  private:
     class BucketType {
-    private:
-        using bucket_value = std::pair<Key, Value>;
-        using bucket_data = std::list<bucket_value>;
+      private:
+        using bucket_value    = std::pair<Key, Value>;
+        using bucket_data     = std::list<bucket_value>;
         using bucket_iterator = typename bucket_data::iterator;
 
         bucket_data m_data;
@@ -34,8 +34,8 @@ private:
 
             return m_data.end();
         }
-    
-    public:
+
+      public:
         Value value_for(const Key& key, const Value& default_value) {
             std::shared_lock<std::shared_timed_mutex> lock(m_mutex);
             const bucket_iterator it = find_entry_for(key);
@@ -69,10 +69,10 @@ private:
         return *m_buckets[idx];
     }
 
-public:
-    using key_type = Key;
+  public:
+    using key_type    = Key;
     using mapped_type = Value;
-    using hash_type = Hash;
+    using hash_type   = Hash;
 
     ThreadsafeLookupTable(const std::size_t num_buckets = 19, const Hash& hash_fn = Hash())
         : m_buckets(num_buckets), m_hash_fn(hash_fn) {
@@ -80,7 +80,7 @@ public:
             m_buckets[i].reset(new BucketType);
         }
     }
-    ThreadsafeLookupTable(const ThreadsafeLookupTable&) = delete;
+    ThreadsafeLookupTable(const ThreadsafeLookupTable&)            = delete;
     ThreadsafeLookupTable& operator=(const ThreadsafeLookupTable&) = delete;
 
     Value value_for(const Key& key, const Value& default_value = Value()) const {

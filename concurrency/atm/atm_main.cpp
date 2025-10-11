@@ -20,33 +20,33 @@ int main() {
     while (!quit_pressed) {
         char c = getchar();
         switch (c) {
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            atmqueue.send(DigitPressed(c));
-            break;
-        case 'b':
-            atmqueue.send(BalancePressed());
-            break;
-        case 'w':
-            atmqueue.send(Withdraw_pressed(50));
-            break;
-        case 'c':
-            atmqueue.send(CancelPressed());
-            break;
-        case 'q':
-            quit_pressed = true;
-            break;
-        case 'i':
-            atmqueue.send(CardInserted("account123456"));
-            break;
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                atmqueue.send(DigitPressed(c));
+                break;
+            case 'b':
+                atmqueue.send(BalancePressed());
+                break;
+            case 'w':
+                atmqueue.send(Withdraw_pressed(50));
+                break;
+            case 'c':
+                atmqueue.send(CancelPressed());
+                break;
+            case 'q':
+                quit_pressed = true;
+                break;
+            case 'i':
+                atmqueue.send(CardInserted("account123456"));
+                break;
         }
     }
 

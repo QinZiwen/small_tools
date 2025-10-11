@@ -1,7 +1,7 @@
 #include "msg_bus.h"
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 struct msg {

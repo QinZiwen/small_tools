@@ -6,26 +6,20 @@ namespace ccy {
 
 template <typename PreviousDispatcher, typename Msg, typename Func>
 class TemplateDispatcher {
-public:
+  public:
     // TemplateDispatcher的各种特化版本互为友元
     template <typename D, typename M, typename F>
     friend class TemplateDispatcher;
 
-public:
-    TemplateDispatcher(const TemplateDispatcher&) = delete;
+  public:
+    TemplateDispatcher(const TemplateDispatcher&)            = delete;
     TemplateDispatcher& operator=(const TemplateDispatcher&) = delete;
     TemplateDispatcher(TemplateDispatcher&& other)
-        : m_queue(other.m_queue),
-          m_prev(other.m_prev),
-          m_func(std::move(other.m_func)),
-          m_chained(other.m_chained) {
+        : m_queue(other.m_queue), m_prev(other.m_prev), m_func(std::move(other.m_func)), m_chained(other.m_chained) {
         other.m_chained = true;
     }
     TemplateDispatcher(Queue* q, PreviousDispatcher* prev, Func&& func)
-        : m_queue(q),
-          m_prev(prev),
-          m_func(std::forward<Func>(func)),
-          m_chained(false) {
+        : m_queue(q), m_prev(prev), m_func(std::forward<Func>(func)), m_chained(false) {
         prev->m_chained = true;
         std::cout << "[TemplateDispatcher::TemplateDispatcher] queue_address: " << m_queue << std::endl;
     }
@@ -43,7 +37,7 @@ public:
         return TemplateDispatcher<TemplateDispatcher, OtherMsg, OtherFunc>(m_queue, this, std::forward<OtherFunc>(of));
     }
 
-private:
+  private:
     void waitAndDispatch() {
         std::cout << "[TemplateDispatcher::waitAndDispatch]" << std::endl;
         while (true) {
@@ -67,7 +61,7 @@ private:
         }
     }
 
-private:
+  private:
     Queue* m_queue;
     PreviousDispatcher* m_prev;
     Func m_func;

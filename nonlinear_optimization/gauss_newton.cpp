@@ -1,20 +1,20 @@
-#include <iostream>
-#include <random>
-#include <chrono>
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <chrono>
+#include <iostream>
+#include <random>
 
 void gaussNewton(bool useSigma) {
     double ar = 1.0, br = 2.0, cr = 1.0;
     double ae = 4.1, be = 3.9, ce = 2.1;
-    int N = 100;
-    double w_sigma = 1.32;
+    int N            = 100;
+    double w_sigma   = 1.32;
     double inv_sigma = 1.0 / std::pow(w_sigma, 2);
     std::cout << "guess params: " << ae << ", " << be << ", " << ce << std::endl;
-    
-    std::random_device rd {};
-    std::mt19937 gen {rd()};
-    std::normal_distribution<double> d {0.0, w_sigma * w_sigma};
+
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::normal_distribution<double> d{0.0, w_sigma * w_sigma};
 
     // generate data
     std::vector<double> x_data, y_data;
@@ -32,7 +32,7 @@ void gaussNewton(bool useSigma) {
     for (int iter = 0; iter < iterations; ++iter) {
         Eigen::Matrix3d H = Eigen::Matrix3d::Zero();
         Eigen::Vector3d b = Eigen::Vector3d::Zero();
-        cost = 0.0;
+        cost              = 0.0;
 
         for (int i = 0; i < N; ++i) {
             double x = x_data[i], y = y_data[i];
@@ -73,7 +73,7 @@ void gaussNewton(bool useSigma) {
     }
 
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
-    double used_time = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+    double used_time                         = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
     std::cout << "used time: " << used_time << "ms" << std::endl;
     std::cout << "estimated params: " << ae << ", " << be << ", " << ce << std::endl;
     std::cout << "real params: " << ar << ", " << br << ", " << cr << std::endl;

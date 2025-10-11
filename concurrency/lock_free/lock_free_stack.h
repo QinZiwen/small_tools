@@ -1,14 +1,14 @@
 #pragma once
 
 #include <atomic>
-#include <memory>
 #include <iostream>
+#include <memory>
 
 namespace ccy {
 
-template<typename T>
+template <typename T>
 class LockFreeStack {
-private:
+  private:
     struct Node;
     struct CountedNodePtr {
         int external_count;
@@ -36,24 +36,28 @@ private:
         do {
             new_counter = old_counter;
             ++new_counter.external_count;
-        } while (!m_head.compare_exchange_strong(old_counter, new_counter, std::memory_order_acquire, std::memory_order_relaxed));
+        } while (!m_head.compare_exchange_strong(old_counter, new_counter, std::memory_order_acquire,
+                                                 std::memory_order_relaxed));
         old_counter.external_count = new_counter.external_count;
     }
 
-public:
+  public:
     LockFreeStack() {
         std::cout << "construct LockFreeStack, this: " << this << std::endl;
     }
     ~LockFreeStack() {
-        while (pop());
+        while (pop())
+            ;
     }
 
     void push(const T& data) {
         CountedNodePtr new_node;
-        new_node.ptr = new Node(data);
+        new_node.ptr            = new Node(data);
         new_node.external_count = 1;
-        new_node.ptr->next = m_head.load(std::memory_order_relaxed);
-        while (!m_head.compare_exchange_weak(new_node.ptr->next, new_node, std::memory_order_relaxed, std::memory_order_relaxed));
+        new_node.ptr->next      = m_head.load(std::memory_order_relaxed);
+        while (!m_head.compare_exchange_weak(new_node.ptr->next, new_node, std::memory_order_relaxed,
+                                             std::memory_order_relaxed))
+            ;
     }
 
     std::shared_ptr<T> pop() {
@@ -79,7 +83,8 @@ public:
                 std::cout << "pop return res: " << *res << std::endl;
                 return res;
             } else if (ptr->internal_count.fetch_add(-1, std::memory_order_relaxed) == 1) {
-                std::cout << "pop, -1, internal_count: "<< ptr->internal_count.load(std::memory_order_acquire) << std::endl;
+                std::cout << "pop, -1, internal_count: " << ptr->internal_count.load(std::memory_order_acquire)
+                          << std::endl;
                 delete ptr;
             } else {
                 std::cout << "pop, else" << std::endl;

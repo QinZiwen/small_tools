@@ -20,7 +20,7 @@ void LockFreeQueueTest() {
     for (int i = 0; i < 2; ++i) {
         threads.emplace_back([&]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            while (true) { 
+            while (true) {
                 std::cout << "read queue ..." << std::endl;
                 std::shared_ptr<int> data = g_queue.pop();
                 if (data != nullptr) {

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <atomic>
 #include <iostream>
+#include <memory>
 
 namespace ccy {
 
-template<typename T>
+template <typename T>
 class LockFreeQueue {
-private:
+  private:
     struct Node {
         std::shared_ptr<T> data;
         Node* next;
@@ -29,9 +29,9 @@ private:
         return old_head;
     }
 
-public:
+  public:
     LockFreeQueue() : m_head(new Node), m_tail(m_head.load()) {}
-    LockFreeQueue(const LockFreeQueue*) = delete;
+    LockFreeQueue(const LockFreeQueue*)            = delete;
     LockFreeQueue& operator=(const LockFreeQueue*) = delete;
     ~LockFreeQueue() {
         while (const Node* old_head = m_head.load()) {
@@ -42,7 +42,7 @@ public:
 
     void push(T new_value) {
         std::shared_ptr<T> new_data(std::make_shared<T>(new_value));
-        Node* p = new Node;
+        Node* p        = new Node;
         Node* old_tail = m_tail.load();
         old_tail->data.swap(new_data);
         old_tail = p;

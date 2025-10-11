@@ -1,24 +1,24 @@
 #pragma once
 
+#include "threadsafe_queue.h"
+
 #include <atomic>
 #include <functional>
-#include <vector>
-#include <thread>
-#include <iostream>
 #include <future>
-
-#include "threadsafe_queue.h"
+#include <iostream>
+#include <thread>
+#include <vector>
 
 namespace ccy {
 
 class FunctionWrapper {
-public:
+  public:
     FunctionWrapper() = default;
-    template<typename FunctionType>
+    template <typename FunctionType>
     FunctionWrapper(FunctionType&& f) : m_imple(new Imple<FunctionType>(std::move(f))) {}
     FunctionWrapper(FunctionWrapper&& other) : m_imple(std::move(other.m_imple)) {}
-    FunctionWrapper(const FunctionWrapper&) = delete;
-    FunctionWrapper(FunctionWrapper&) = delete;
+    FunctionWrapper(const FunctionWrapper&)            = delete;
+    FunctionWrapper(FunctionWrapper&)                  = delete;
     FunctionWrapper& operator=(const FunctionWrapper&) = delete;
     FunctionWrapper& operator=(FunctionWrapper&& other) {
         if (this != &other) {
@@ -27,18 +27,22 @@ public:
         return *this;
     }
 
-    void operator()() { m_imple->call(); }
+    void operator()() {
+        m_imple->call();
+    }
 
-private:
+  private:
     struct ImpleBase {
-        virtual void call() = 0;
+        virtual void call()  = 0;
         virtual ~ImpleBase() = default;
     };
 
-    template<typename FunctionType>
+    template <typename FunctionType>
     struct Imple : ImpleBase {
         Imple(FunctionType&& f) : m_function(std::move(f)) {}
-        void call() { m_function(); }
+        void call() {
+            m_function();
+        }
 
         FunctionType m_function;
     };
@@ -47,11 +51,11 @@ private:
 };
 
 class WorkStealingQueue {
-public:
+  public:
     using DataType = FunctionWrapper;
 
-    WorkStealingQueue() = default;
-    WorkStealingQueue(const WorkStealingQueue&) = delete;
+    WorkStealingQueue()                                    = default;
+    WorkStealingQueue(const WorkStealingQueue&)            = delete;
     WorkStealingQueue& operator=(const WorkStealingQueue&) = delete;
 
     void push(DataType data) {
@@ -65,7 +69,7 @@ public:
         if (m_the_queue.empty()) {
             return false;
         }
-        res = std::move(m_the_queue.front());    // front
+        res = std::move(m_the_queue.front());  // front
         m_the_queue.pop_front();
         return true;
     }
@@ -75,7 +79,7 @@ public:
         if (m_the_queue.empty()) {
             return false;
         }
-        res = std::move(m_the_queue.back());    // back
+        res = std::move(m_the_queue.back());  // back
         m_the_queue.pop_back();
         return true;
     }
@@ -90,15 +94,15 @@ public:
         return m_the_queue.size();
     }
 
-private:
+  private:
     std::deque<DataType> m_the_queue;
     mutable std::mutex m_mutex;
 };
 
 class ThreadPool {
-public:
+  public:
     using TaskType = FunctionWrapper;
-    
+
     ThreadPool() : m_done(false) {
         const unsigned thrad_count = std::thread::hardware_concurrency();
         std::cout << "thread_count: " << thrad_count << std::endl;
@@ -127,14 +131,15 @@ public:
         }
     }
 
-    template<typename FunctionType>
+    template <typename FunctionType>
     std::future<typename std::result_of<FunctionType()>::type> submit(FunctionType f) {
         using result_type = typename std::result_of<FunctionType()>::type;
         std::packaged_task<result_type()> task(std::move(f));
         std::future<result_type> res(task.get_future());
-        
+
         for (size_t i = 0; i < m_local_work_queues.size(); ++i) {
-            std::cout << "[ThreadPool submit] " << i << " local_work_queues size: " << m_local_work_queues[i]->size() << std::endl;
+            std::cout << "[ThreadPool submit] " << i << " local_work_queues size: " << m_local_work_queues[i]->size()
+                      << std::endl;
             if (m_local_work_queues[i]->size() < 5) {
                 std::cout << "thread " << std::this_thread::get_id() << " push task to local queue" << std::endl;
                 m_local_work_queues[i]->push(std::move(task));
@@ -146,20 +151,20 @@ public:
         m_pool_work_queue.push(std::move(task));
         return res;
     }
-private:
+
+  private:
     void worker_thread(unsigned index) {
-        m_queue_index = index;
+        m_queue_index    = index;
         local_work_queue = m_local_work_queues[index].get();
         while (!m_done) {
             TaskType task;
-            if (pop_task_from_local_queue(task)
-                || pop_task_from_pool_queue(task)
-                || pop_task_from_other_threads(task)) {
+            if (pop_task_from_local_queue(task) || pop_task_from_pool_queue(task) ||
+                pop_task_from_other_threads(task)) {
                 task();
             } else {
                 std::this_thread::yield();
             }
-        }   
+        }
     }
 
     bool pop_task_from_local_queue(TaskType& task) {
@@ -179,16 +184,16 @@ private:
         for (unsigned i = 0; i < m_local_work_queues.size(); ++i) {
             const unsigned index = (m_queue_index + i + 1) % m_local_work_queues.size();
             WorkStealingQueue* q = m_local_work_queues[index].get();
-            std::cout << "[ThreadPool pop_task_from_other_threads] index: " << index << " q: " << q<< std::endl;
+            std::cout << "[ThreadPool pop_task_from_other_threads] index: " << index << " q: " << q << std::endl;
             if (q->try_steal(task)) {
                 std::cout << "thread " << m_queue_index << " steal task from thread " << index << std::endl;
                 return true;
             }
         }
         return false;
-   }
+    }
 
-private:
+  private:
     std::atomic_bool m_done;
     ThreadsafeQueue<TaskType> m_pool_work_queue;
     std::vector<std::unique_ptr<WorkStealingQueue>> m_local_work_queues;
@@ -198,6 +203,6 @@ private:
 };
 
 thread_local WorkStealingQueue* ThreadPool::local_work_queue = nullptr;
-thread_local unsigned ThreadPool::m_queue_index = 0;
+thread_local unsigned ThreadPool::m_queue_index              = 0;
 
 }  // namespace ccy

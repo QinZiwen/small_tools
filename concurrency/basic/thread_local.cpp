@@ -1,21 +1,20 @@
 /**
  * thread_local是一个存储期指定符（storage class specifier）。
  * 与它同是存储期指定符的还有4个，分别是：auto, register, static, extern
- * 
+ *
  * thread_local 关键词只对声明于命名空间作用域的对象、声明于块作用域的对象及静态数据成员允许。
- * 它指示对象拥有线程存储期。它能与 static 或 extern 结合，以分别指定内部或外部链接（除了静态数据成员始终拥有外部链接），
- * 但附加的 static 不影响存储期。 
- * 线程存储期: 对象的存储在线程开始时分配，而在线程结束时解分配。
- * 每个线程拥有其自身的对象实例。唯有声明为 thread_local 的对象拥有此存储期。 
- * thread_local 能与 static 或 extern 一同出现，以调整链接。
-*/
+ * 它指示对象拥有线程存储期。它能与 static 或 extern
+ * 结合，以分别指定内部或外部链接（除了静态数据成员始终拥有外部链接）， 但附加的 static 不影响存储期。 线程存储期:
+ * 对象的存储在线程开始时分配，而在线程结束时解分配。 每个线程拥有其自身的对象实例。唯有声明为 thread_local
+ * 的对象拥有此存储期。 thread_local 能与 static 或 extern 一同出现，以调整链接。
+ */
 
 #include <iostream>
-#include <thread>
 #include <mutex>
+#include <thread>
 
-std::mutex cout_mutex;    // 方便多线程打印
-thread_local int x;       // 不初始化, 自动初始化为0
+std::mutex cout_mutex;  // 方便多线程打印
+thread_local int x;     // 不初始化, 自动初始化为0
 // thread_local int x = 1;
 
 void thread_func(const std::string& thread_name) {
@@ -31,10 +30,10 @@ void thread_func(const std::string& thread_name) {
  * thread_local的局部变量没有因为for循环作用域而重新赋值。
  * 这是因为线程存储期的变量都是和线程绑定的，所以只有第一次声明时被赋值。
  * 可以理解为线程的static变量。不过变量的作用域依然是在本身的作用域内
-*/
+ */
 void thread_func_2(const std::string& thread_name) {
     for (int i = 0; i < 3; ++i) {
-        thread_local int x = 1;    // 像一个静态变量，只初始化一次，并且是线程存储期
+        thread_local int x = 1;  // 像一个静态变量，只初始化一次，并且是线程存储期
         x++;
         std::lock_guard<std::mutex> lock(cout_mutex);
         std::cout << "thread[" << thread_name << "]: x = " << x << std::endl;
@@ -44,9 +43,9 @@ void thread_func_2(const std::string& thread_name) {
 
 /**
  * thread_local 为类对象，和内置类型一样
-*/
+ */
 class A {
-public:
+  public:
     A() {
         std::lock_guard<std::mutex> lock(cout_mutex);
         std::cout << "create A" << std::endl;
@@ -61,7 +60,7 @@ public:
         return m_counter++;
     }
 
-private:
+  private:
     int m_counter = 0;
 };
 
@@ -83,9 +82,9 @@ void thread_func_3(const std::string& thread_name) {
  * 这样，每个线程都将共享同一个变量副本，而不是为每个对象实例创建一个新的副本。
  * 因此，为了在类的成员变量上正确使用'thread_local'关键字，您需要在成员变量前加上'static'关键字，
  * 以确保变量在类的所有实例之间共享，并且在每个线程中有自己的副本。
-*/
+ */
 class B {
-public:
+  public:
     B() {
         std::lock_guard<std::mutex> lock(cout_mutex);
         std::cout << "create B" << std::endl;
@@ -95,8 +94,7 @@ public:
         std::cout << "destroy B" << std::endl;
     }
 
-
-    //thread_local static int b_key;
+    // thread_local static int b_key;
     static thread_local int b_key;
     int b_value = 24;
     static int b_static;
@@ -111,10 +109,12 @@ void thread_func_4(const std::string& thread_name) {
     for (int i = 0; i < 3; ++i) {
         b.b_key--;
         b.b_value--;
-        b.b_static--;   // not thread safe
+        b.b_static--;  // not thread safe
         std::lock_guard<std::mutex> lock(cout_mutex);
-        std::cout << "thread[" << thread_name << "]: b_key:" << b.b_key << ", b_value:" << b.b_value << ", b_static:" << b.b_static << std::endl;
-        std::cout << "thread[" << thread_name << "]: B::key:" << B::b_key << ", b_value:" << b.b_value << ", b_static: " << B::b_static << std::endl;
+        std::cout << "thread[" << thread_name << "]: b_key:" << b.b_key << ", b_value:" << b.b_value
+                  << ", b_static:" << b.b_static << std::endl;
+        std::cout << "thread[" << thread_name << "]: B::key:" << B::b_key << ", b_value:" << b.b_value
+                  << ", b_static: " << B::b_static << std::endl;
     }
     return;
 }
@@ -136,7 +136,6 @@ int main() {
     std::thread t6(thread_func_3, "t6");
     t5.join();
     t6.join();
-
 
     std::cout << "--------------------" << std::endl;
     std::thread t7(thread_func_4, "t7");

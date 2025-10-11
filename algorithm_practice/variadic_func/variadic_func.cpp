@@ -4,22 +4,35 @@ using namespace std;
 struct A {
     int a;
     A() : a(1) {}
-    A(const A& a) { cout << "copy constructed " << __func__ << endl; }
-    A(A&& a) { cout << "move constructed " << __func__ << endl; }
+    A(const A& a) {
+        cout << "copy constructed " << __func__ << endl;
+    }
+    A(A&& a) {
+        cout << "move constructed " << __func__ << endl;
+    }
 };
 
 struct B {
     int b;
     B() : b(2) {}
-    B(const B& b) { cout << "copy constructed " << __func__ << endl; }
-    B(B&& b) { cout << "move constructed " << __func__ << endl; }
+    B(const B& b) {
+        cout << "copy constructed " << __func__ << endl;
+    }
+    B(B&& b) {
+        cout << "move constructed " << __func__ << endl;
+    }
 };
 
-template <typename... Args> struct MultiTypes;
-template <> struct MultiTypes<> {
-    MultiTypes<>() { cout << "MultiTypes<>()" << endl; }
+template <typename... Args>
+struct MultiTypes;
+template <>
+struct MultiTypes<> {
+    MultiTypes<>() {
+        cout << "MultiTypes<>()" << endl;
+    }
 };
-template <typename T, typename... Args> struct MultiTypes<T, Args...> : MultiTypes<Args...> {
+template <typename T, typename... Args>
+struct MultiTypes<T, Args...> : MultiTypes<Args...> {
     MultiTypes(T t, Args... args) : MultiTypes<Args...>(args...), t(t) {
         cout << "MultiTypes(T t, Args... args)" << endl;
     }

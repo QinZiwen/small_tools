@@ -3,7 +3,7 @@
 #include <thread>
 
 class Test {
-public:
+  public:
     void fun() {
         std::unique_lock<std::mutex> lck(m_mtx);
         if (bool(lck)) {
@@ -19,7 +19,7 @@ public:
         }
     }
 
-private:
+  private:
     std::mutex m_mtx;
 };
 

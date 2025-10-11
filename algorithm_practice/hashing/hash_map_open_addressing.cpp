@@ -14,13 +14,13 @@ double HashMapOpenAddressing::loadFactor() {
 }
 
 int HashMapOpenAddressing::findBucket(int key) {
-    int index = hashFunc(key);
+    int index          = hashFunc(key);
     int firstTombstone = -1;
     while (buckets[index] != nullptr) {
         if (buckets[index]->key == key) {
             if (firstTombstone != -1) {
                 buckets[firstTombstone] = std::move(buckets[index]);
-                buckets[index] = TOMBSTONE;
+                buckets[index]          = TOMBSTONE;
                 return firstTombstone;
             }
             return index;

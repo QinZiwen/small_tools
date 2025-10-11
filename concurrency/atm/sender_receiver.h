@@ -8,12 +8,12 @@ namespace ccy {
 class CloseQueue {};
 
 class Dispatcher {
-public:
+  public:
     template <typename Dispatcher, typename Msg, typename Func>
     friend class TemplateDispatcher;
 
-public:
-    Dispatcher(const Dispatcher&) = delete;
+  public:
+    Dispatcher(const Dispatcher&)            = delete;
     Dispatcher& operator=(const Dispatcher&) = delete;
 
     Dispatcher(Queue* q) : m_queue(q), m_chained(false) {
@@ -32,11 +32,11 @@ public:
     template <typename Message, typename Func>
     TemplateDispatcher<Dispatcher, Message, Func> handle(Func&& func) {
         std::cout << "[Dispatcher::handle] Message_name: " << typeid(Message).name()
-                  << " Func_name: " << typeid(Func).name() <<  std::endl;
+                  << " Func_name: " << typeid(Func).name() << std::endl;
         return TemplateDispatcher<Dispatcher, Message, Func>(m_queue, this, std::forward<Func>(func));
     }
 
-private:
+  private:
     void waitAndDispatch() {
         std::cout << "[Dispatcher::waitAndDispatch]" << std::endl;
         while (true) {
@@ -55,16 +55,16 @@ private:
         return false;
     }
 
-private:
+  private:
     Queue* m_queue;
     bool m_chained;
 };
 
 class Sender {
-public:
+  public:
     Sender() : m_queue(nullptr) {}
     explicit Sender(Queue* q) : m_queue(q) {}
-    
+
     template <typename T>
     void send(const T& msg) {
         std::cout << "[Sender::send] typename: " << typeid(T).name() << std::endl;
@@ -73,12 +73,12 @@ public:
         }
     }
 
-private:
+  private:
     Queue* m_queue;
 };
 
 class Receiver {
-public:
+  public:
     operator Sender() {
         std::cout << "[Receiver::operator Sender]" << std::endl;
         return Sender(&m_queue);
@@ -89,7 +89,7 @@ public:
         return Dispatcher(&m_queue);
     }
 
-private:
+  private:
     Queue m_queue;
 };
 

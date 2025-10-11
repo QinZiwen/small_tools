@@ -1,13 +1,13 @@
-#include <iostream>
-#include <cuchar>
 #include <codecvt>
+#include <cuchar>
+#include <iostream>
 #include <locale>
 #include <string>
 
 using namespace std;
 
 void test1() {
-    char utf8[] = u8"\u4f60\u597d\u5440\u5440";
+    char utf8[]      = u8"\u4f60\u597d\u5440\u5440";
     char16_t utf16[] = u"hello";
     char32_t utf32[] = U"hello";
 
@@ -17,7 +17,7 @@ void test1() {
 }
 
 void test2() {
-    char16_t utf8[] = u"\u4f60\u597d\u5440\u5440";
+    char16_t utf8[]           = u"\u4f60\u597d\u5440\u5440";
     char mb[sizeof(utf8) * 2] = {0};
 
     mbstate_t s;

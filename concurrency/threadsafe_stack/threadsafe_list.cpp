@@ -18,7 +18,7 @@ int main() {
     }
 
     list.remove_if([](int v) { return v == 2; });
-    
+
     std::cout << "list:";
     list.for_each([](int v) { std::cout << " " << v; });
     std::cout << std::endl;

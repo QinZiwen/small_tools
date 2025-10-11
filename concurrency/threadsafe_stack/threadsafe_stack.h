@@ -13,9 +13,9 @@ struct EmptyStack : public std::exception {
     }
 };
 
-template<typename T>
+template <typename T>
 class ThreadsafeStack {
-public:
+  public:
     ThreadsafeStack() = default;
     ThreadsafeStack(const ThreadsafeStack& other) {
         std::lock_guard<std::mutex> lock(other.m_mutex);
@@ -52,7 +52,7 @@ public:
         return m_data.empty();
     }
 
-private:
+  private:
     std::stack<T> m_data;
     mutable std::mutex m_mutex;
 };

@@ -1,8 +1,8 @@
 #include "threadsafe_queue.h"
 
-#include <thread>
 #include <iostream>
 #include <random>
+#include <thread>
 #include <vector>
 
 ccy::ThreadsafeQueue<int> g_threadsafe_queue;
@@ -59,7 +59,7 @@ void ThreadsafeQueueV2Test() {
     std::vector<std::thread> threads;
     for (int i = 0; i < 1; ++i) {
         threads.emplace_back([&]() {
-            while(true) {
+            while (true) {
                 std::shared_ptr<int> res = g_threadsafe_queue_v2.try_pop();
                 if (res) {
                     std::cout << "thread1: " << *res << std::endl;
@@ -95,7 +95,7 @@ void ThreadsafeQueueV3Test() {
     std::vector<std::thread> threads;
     for (int i = 0; i < 3; ++i) {
         threads.emplace_back([&]() {
-            while(true) {
+            while (true) {
                 std::shared_ptr<int> res = g_threadsafe_queue_v3.try_pop();
                 if (res) {
                     std::cout << std::this_thread::get_id() << " : " << *res << std::endl;
@@ -131,7 +131,7 @@ void ThreadsafeQueueV4Test() {
     std::vector<std::thread> threads;
     for (int i = 0; i < 3; ++i) {
         threads.emplace_back([&]() {
-            while(true) {
+            while (true) {
                 std::shared_ptr<int> res = g_threadsafe_queue_v4.wait_pop();
                 std::cout << std::this_thread::get_id() << " << " << *res << std::endl;
             }

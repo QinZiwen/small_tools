@@ -1,24 +1,24 @@
 #pragma once
 
+#include "threadsafe_queue.h"
+
 #include <atomic>
 #include <functional>
-#include <vector>
-#include <thread>
-#include <iostream>
 #include <future>
-
-#include "threadsafe_queue.h"
+#include <iostream>
+#include <thread>
+#include <vector>
 
 namespace ccy {
 
 class FunctionWrapper {
-public:
+  public:
     FunctionWrapper() = default;
-    template<typename FunctionType>
+    template <typename FunctionType>
     FunctionWrapper(FunctionType&& f) : m_imple(new Imple<FunctionType>(std::move(f))) {}
     FunctionWrapper(FunctionWrapper&& other) : m_imple(std::move(other.m_imple)) {}
-    FunctionWrapper(const FunctionWrapper&) = delete;
-    FunctionWrapper(FunctionWrapper&) = delete;
+    FunctionWrapper(const FunctionWrapper&)            = delete;
+    FunctionWrapper(FunctionWrapper&)                  = delete;
     FunctionWrapper& operator=(const FunctionWrapper&) = delete;
     FunctionWrapper& operator=(FunctionWrapper&& other) {
         if (this != &other) {
@@ -27,18 +27,22 @@ public:
         return *this;
     }
 
-    void operator()() { m_imple->call(); }
+    void operator()() {
+        m_imple->call();
+    }
 
-private:
+  private:
     struct ImpleBase {
-        virtual void call() = 0;
+        virtual void call()  = 0;
         virtual ~ImpleBase() = default;
     };
 
-    template<typename FunctionType>
+    template <typename FunctionType>
     struct Imple : ImpleBase {
         Imple(FunctionType&& f) : m_function(std::move(f)) {}
-        void call() { m_function(); }
+        void call() {
+            m_function();
+        }
 
         FunctionType m_function;
     };
@@ -47,7 +51,7 @@ private:
 };
 
 class ThreadPool {
-public:
+  public:
     ThreadPool() : m_done(false) {
         const unsigned thrad_count = std::thread::hardware_concurrency();
         std::cout << "thread_count: " << thrad_count << std::endl;
@@ -69,7 +73,7 @@ public:
         }
     }
 
-    template<typename FunctionType>
+    template <typename FunctionType>
     std::future<typename std::result_of<FunctionType()>::type> submit(FunctionType f) {
         using result_type = typename std::result_of<FunctionType()>::type;
         std::packaged_task<result_type()> task(std::move(f));
@@ -78,7 +82,7 @@ public:
         return res;
     }
 
-private:
+  private:
     void worker_thread() {
         while (!m_done) {
             FunctionWrapper task;
@@ -90,7 +94,7 @@ private:
         }
     }
 
-private:
+  private:
     std::atomic_bool m_done;
     ThreadsafeQueue<FunctionWrapper> m_work_queue;
     std::vector<std::thread> m_threads;

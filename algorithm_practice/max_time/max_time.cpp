@@ -26,7 +26,7 @@ void findTime(int arr[], int n) {
             }
         }
 
-        if (i == 1 || i== 3) {
+        if (i == 1 || i == 3) {
             time += ":";
         }
         // std::cout << "i: " << i << " -> " << time << std::endl;

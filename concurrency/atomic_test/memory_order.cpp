@@ -1,9 +1,9 @@
-#include <iostream>
 #include <atomic>
+#include <iostream>
 #include <thread>
 
-std::atomic<int> a {0};
-std::atomic<int> b {0};
+std::atomic<int> a{0};
+std::atomic<int> b{0};
 
 void valueSet(int x) {
     a.store(x, std::memory_order_relaxed);
