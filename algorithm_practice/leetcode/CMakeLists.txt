@@ -1,0 +1,1 @@
+add_executable(1905 1905.cpp)
