@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <typeinfo>
 
 using Handle = size_t;
 inline Handle unifyHandle() {
